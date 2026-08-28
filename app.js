@@ -548,14 +548,25 @@ function renderWeek(){
     stat(dv === null ? '—' : '<span class="delta ' + (dv >= 0 ? 'up' : 'down') + '">' + (dv >= 0 ? '+' : '') + dv + '%</span>', '對比上週');
 
   const agg = new Map();
+  const catCounts = Object.fromEntries(CATS.map(c => [c.id, 0]));
   days.forEach(k => {
     entriesForDate(k).forEach(e => {
       if(!agg.has(e.ex.id)) agg.set(e.ex.id, { name:e.ex.name, sets:0, vol:0 });
       const a = agg.get(e.ex.id);
       a.sets += e.sets.length;
       a.vol += vol(e.sets);
+      catCounts[e.ex.category] = (catCounts[e.ex.category] || 0) + e.sets.length;
     });
   });
+  document.getElementById('weekCatCoverage').innerHTML = CATS.map(c => {
+    const n = catCounts[c.id] || 0;
+    const done = n > 0;
+    return '<div class="covchip"' + (done ? ' style="border-color:' + c.color + '"' : '') + '>' +
+      '<span class="dot" style="background:' + (done ? c.color : 'var(--line)') + '"></span>' +
+      '<span class="lbl">' + c.label + '</span>' +
+      '<span class="cnt">' + (done ? n + ' 組' : '未安排') + '</span></div>';
+  }).join('');
+
   const wx = document.getElementById('weekExercises');
   if(!agg.size){
     wx.innerHTML = '<div class="empty">這週還沒有訓練紀錄。</div>';

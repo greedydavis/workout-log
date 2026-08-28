@@ -143,6 +143,13 @@ textarea#food:focus{border-color:var(--accent)}
 .delta{font-size:12px}
 .delta.up{color:var(--good)} .delta.down{color:var(--danger)}
 
+/* 週：本週部位覆蓋 */
+.covrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.covchip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 2px;text-align:center}
+.covchip .dot{display:block;width:8px;height:8px;border-radius:50%;margin:0 auto 5px;background:var(--line)}
+.covchip .lbl{display:block;font-size:12px;font-weight:600}
+.covchip .cnt{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+
 /* 動作庫 / 趨勢 */
 .exlist-item{
   display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;
