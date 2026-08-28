@@ -19,7 +19,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 button{background:none;border:none;padding:0;cursor:pointer}
 
 /* 登入畫面 */
-#authGate{
+#authGate:not([hidden]){
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
   padding-bottom:calc(24px + env(safe-area-inset-bottom));
 }
