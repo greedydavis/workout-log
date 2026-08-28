@@ -10,190 +10,39 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
 <title>訓練紀錄</title>
-<style>
-:root{
-  --bg:#f5f6f8; --card:#fff; --text:#14181c; --muted:#6b7580; --line:#e2e6ea;
-  --accent:#2f6fed; --accent-soft:#e8f0fe; --good:#1f9d55; --danger:#d64545;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#0f1215; --card:#181c22; --text:#e8ecef; --muted:#8a949e; --line:#272d35;
-    --accent:#6b9bff; --accent-soft:#1b2740; --good:#3ecf8e; --danger:#ff6b6b;
-  }
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
-body{
-  background:var(--bg); color:var(--text);
-  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
-  padding-bottom:calc(64px + env(safe-area-inset-bottom));
-}
-button,input,textarea{font:inherit;color:inherit}
-button{background:none;border:none;padding:0;cursor:pointer}
-
-/* 頂部日期列 */
-#topbar{
-  position:sticky; top:0; z-index:30; background:var(--bg);
-  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
-  border-bottom:1px solid var(--line);
-}
-.datenav{display:flex;align-items:center;gap:8px}
-.datenav .arrow{width:40px;height:40px;border-radius:10px;font-size:20px;color:var(--muted);flex:none}
-.datenav .arrow:active{background:var(--line)}
-.datenav .label{flex:1;text-align:center;font-weight:600;font-size:17px}
-.datenav .label small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
-.today-btn{font-size:13px;color:var(--accent);padding:6px 10px;border-radius:8px;background:var(--accent-soft);flex:none}
-
-main{padding:12px 12px 24px;max-width:640px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-h2{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 10px;letter-spacing:.04em}
-.empty{color:var(--muted);font-size:14px;padding:6px 0}
-
-/* 搜尋 */
-.search-wrap{position:relative;margin-bottom:12px}
-#search{
-  width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
-  background:var(--card);outline:none;
-}
-#search:focus{border-color:var(--accent)}
-#results{margin-top:8px;display:none}
-#results.on{display:block}
-.result{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;
-  padding:12px 14px;background:var(--card);border:1px solid var(--line);
-  border-radius:12px;margin-bottom:6px;text-align:left;
-}
-.result .n{font-weight:500}
-.result .s{font-size:12px;color:var(--muted);flex:none}
-.result.new{color:var(--accent);border-style:dashed}
-
-/* 動作方塊 */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chip{
-  background:var(--card);border:1px solid var(--line);border-radius:12px;
-  padding:12px;text-align:left;min-height:64px;
-}
-.chip:active{border-color:var(--accent)}
-.chip .n{font-weight:600;font-size:15px;margin-bottom:3px}
-.chip .s{font-size:12px;color:var(--muted);line-height:1.35}
-.chip.done{border-color:var(--good)}
-.chip.done .n::after{content:" ✓";color:var(--good)}
-
-/* 今日紀錄 */
-.entry{
-  display:flex;justify-content:space-between;align-items:flex-start;gap:10px;width:100%;
-  padding:11px 0;border-bottom:1px solid var(--line);text-align:left;
-}
-.entry:last-child{border-bottom:none;padding-bottom:0}
-.entry .n{font-weight:600}
-.entry .sets{font-size:14px;color:var(--muted);margin-top:2px}
-.entry .note{font-size:13px;color:var(--muted);margin-top:3px;font-style:italic}
-.entry .vol{font-size:12px;color:var(--muted);flex:none;text-align:right;padding-top:2px}
-
-/* 飲食 / 體重 */
-textarea#food{
-  width:100%;min-height:78px;resize:vertical;padding:12px;border-radius:12px;
-  border:1px solid var(--line);background:var(--bg);outline:none;
-}
-textarea#food:focus{border-color:var(--accent)}
-.bw-row{display:flex;align-items:center;gap:10px;margin-top:12px}
-.bw-row label{font-size:14px;color:var(--muted);flex:none}
-#bw{width:110px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);outline:none}
-#bw:focus{border-color:var(--accent)}
-.bw-hint{font-size:12px;color:var(--muted)}
-
-/* 週檢視 */
-.weekgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.daycell{
-  background:var(--card);border:1px solid var(--line);border-radius:10px;
-  padding:8px 2px;text-align:center;min-height:66px;
-}
-.daycell .wd{font-size:11px;color:var(--muted)}
-.daycell .dd{font-size:15px;font-weight:600;margin:2px 0}
-.daycell .vv{font-size:10px;color:var(--muted);line-height:1.2}
-.daycell.has{border-color:var(--good);background:var(--card)}
-.daycell.has .dd{color:var(--good)}
-.daycell.today{outline:2px solid var(--accent);outline-offset:-2px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
-.stat .v{font-size:20px;font-weight:700}
-.stat .k{font-size:11px;color:var(--muted);margin-top:2px}
-.delta{font-size:12px}
-.delta.up{color:var(--good)} .delta.down{color:var(--danger)}
-
-/* 趨勢 */
-.trend-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.trend-head .n{font-weight:600}
-.trend-head .v{font-size:13px;color:var(--muted)}
-svg.chart{width:100%;height:auto;display:block;margin-top:4px}
-.pin-row{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:11px 0;border-bottom:1px solid var(--line);
-}
-.pin-row:last-child{border-bottom:none}
-.pin-row .meta{font-size:12px;color:var(--muted)}
-.toggle{padding:6px 12px;border-radius:8px;font-size:13px;border:1px solid var(--line)}
-.toggle.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-/* 設定 */
-.btn{
-  display:block;width:100%;padding:13px;border-radius:12px;text-align:center;
-  border:1px solid var(--line);background:var(--bg);margin-bottom:8px;font-weight:500;
-}
-.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn.danger{color:var(--danger)}
-.note{font-size:13px;color:var(--muted);line-height:1.6}
-
-/* 底部分頁 */
-#tabbar{
-  position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
-  background:var(--card);border-top:1px solid var(--line);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-#tabbar button{flex:1;padding:9px 0 7px;font-size:11px;color:var(--muted)}
-#tabbar button .ic{display:block;font-size:19px;line-height:1.25}
-#tabbar button.on{color:var(--accent)}
-
-/* 底部輸入面板 */
-#scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:none}
-#scrim.on{display:block}
-#sheet{
-  position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);
-  border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-  transform:translateY(102%);transition:transform .2s ease;max-height:88vh;overflow-y:auto;
-}
-#sheet.on{transform:translateY(0)}
-.sheet-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-.sheet-head .n{font-size:19px;font-weight:700}
-.sheet-head .x{color:var(--muted);font-size:15px;padding:4px 8px}
-.last-hint{font-size:13px;color:var(--muted);margin-bottom:12px}
-.last-hint b{color:var(--accent);font-weight:600}
-.setrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.setrow .idx{width:22px;font-size:13px;color:var(--muted);flex:none;text-align:center}
-.setrow input{
-  flex:1;width:100%;min-width:0;padding:12px 10px;border-radius:10px;
-  border:1px solid var(--line);background:var(--bg);outline:none;text-align:center;font-size:17px;
-}
-.setrow input:focus{border-color:var(--accent)}
-.setrow .u{font-size:13px;color:var(--muted);flex:none}
-.setrow .del{width:34px;height:34px;border-radius:8px;color:var(--muted);font-size:17px;flex:none}
-#noteInput{
-  width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);
-  background:var(--bg);outline:none;margin:4px 0 12px;
-}
-.sheet-actions{display:flex;gap:8px;margin-top:12px}
-.sheet-actions .btn{margin:0}
-.e1rm{font-size:12px;color:var(--muted);text-align:right;margin-top:-2px;margin-bottom:10px}
-</style>
 </head>
 <body>
+
+<!-- 登入 / 註冊 -->
+<div id="authGate">
+  <div class="authcard">
+    <h1>訓練紀錄</h1>
+    <p class="sub">登入後資料會同步到雲端，手機、電腦都看得到。</p>
+    <div class="authfield"><input id="authEmail" type="email" placeholder="Email" autocomplete="username"></div>
+    <div class="authfield"><input id="authPassword" type="password" placeholder="密碼（至少 6 碼）" autocomplete="current-password"></div>
+    <div class="authmsg" id="authMsg"></div>
+    <button class="btn primary" id="authSubmit">登入</button>
+    <div class="authswitch">
+      <span id="authSwitchText">還沒有帳號？</span>
+      <button id="authSwitchBtn">註冊</button>
+    </div>
+    <div class="authnote" id="authSetupNote" hidden>
+      尚未設定 Supabase 連線。請先依 README 建立專案，並把 URL 與 anon key 填入 supabaseClient.js。
+    </div>
+  </div>
+</div>
+
+<!-- 主要 App -->
+<div id="app" hidden>
 
 <header id="topbar">
   <div class="datenav">
     <button class="arrow" id="prevDay" aria-label="前一天">‹</button>
     <div class="label" id="dateLabel"></div>
     <button class="arrow" id="nextDay" aria-label="後一天">›</button>
+    <span class="syncdot" id="syncDot" title="同步狀態"></span>
     <button class="today-btn" id="todayBtn" hidden>今天</button>
   </div>
 </header>
@@ -205,6 +54,8 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
       <input id="search" type="search" placeholder="搜尋或新增動作…" autocomplete="off" enterkeyhint="done">
       <div id="results"></div>
     </div>
+
+    <div class="catchips" id="logCatChips"></div>
 
     <div class="card">
       <h2>今日紀錄</h2>
@@ -219,10 +70,19 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
     <div class="card">
       <h2>🍚 今天吃了</h2>
       <textarea id="food" placeholder="隨便打，不用格式"></textarea>
-      <div class="bw-row">
-        <label for="bw">⚖️ 體重</label>
-        <input id="bw" type="number" inputmode="decimal" step="0.1" placeholder="—">
-        <span class="bw-hint">kg</span>
+      <div class="bodygrid">
+        <div class="bodyfield">
+          <label for="bw">體重 kg</label>
+          <input id="bw" type="number" inputmode="decimal" step="0.1" placeholder="—">
+        </div>
+        <div class="bodyfield">
+          <label for="bf">體脂率 %</label>
+          <input id="bf" type="number" inputmode="decimal" step="0.1" placeholder="—">
+        </div>
+        <div class="bodyfield">
+          <label for="mm">骨骼肌 kg</label>
+          <input id="mm" type="number" inputmode="decimal" step="0.1" placeholder="—">
+        </div>
       </div>
     </div>
   </section>
@@ -244,32 +104,57 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
     </div>
   </section>
 
-  <!-- 趨勢 -->
-  <section id="view-trend" hidden>
-    <div id="trendCharts"></div>
-    <div class="card">
-      <h2>體重</h2>
-      <div id="bwChart"></div>
+  <!-- 動作庫 / 趨勢 -->
+  <section id="view-exercises" hidden>
+
+    <div id="exListPane">
+      <div class="card">
+        <h2>身體數據</h2>
+        <div class="metric-toggle" id="bodyMetricToggle"></div>
+        <div id="bodyChart"></div>
+      </div>
+      <div class="card">
+        <h2>動作</h2>
+        <div class="catchips" id="exCatChips"></div>
+        <div id="exList"></div>
+      </div>
     </div>
-    <div class="card">
-      <h2>釘選核心動作</h2>
-      <p class="note" style="margin:0 0 10px">被釘選的動作才會畫趨勢曲線，建議 3～5 個。</p>
-      <div id="pinList"></div>
+
+    <div id="exDetailPane" hidden>
+      <div class="backrow">
+        <button class="back" id="exBack" aria-label="返回">‹</button>
+        <div class="title">
+          <div class="n" id="exDetailName"></div>
+          <div class="c" id="exDetailCat"></div>
+        </div>
+        <button class="toggle" id="exPinBtn">釘選</button>
+      </div>
+      <div class="card">
+        <div class="metric-toggle" id="exMetricToggle"></div>
+        <div class="trend-head"><span class="v" id="exMetricVal"></span></div>
+        <div id="exChart"></div>
+      </div>
+      <div class="card">
+        <h2>歷史紀錄</h2>
+        <div id="exHistory"></div>
+      </div>
     </div>
+
   </section>
 
   <!-- 設定 -->
   <section id="view-settings" hidden>
+    <div class="card">
+      <h2>帳號</h2>
+      <p class="note" id="accountEmail"></p>
+      <button class="btn danger" id="signOutBtn" style="margin-top:10px">登出</button>
+    </div>
     <div class="card">
       <h2>備份</h2>
       <button class="btn primary" id="exportBtn">匯出 JSON</button>
       <button class="btn" id="importBtn">匯入 JSON</button>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
       <p class="note" id="backupNote"></p>
-    </div>
-    <div class="card">
-      <h2>Google Drive 自動備份</h2>
-      <p class="note">尚未接上。需要先在 Google Cloud Console 建立 OAuth Client ID，接上後會自動同步到 Drive 的私有資料夾。在那之前請定期用上面的「匯出 JSON」保存。</p>
     </div>
     <div class="card">
       <h2>資料</h2>
@@ -282,7 +167,7 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
 <nav id="tabbar">
   <button data-view="log" class="on"><span class="ic">📝</span>記錄</button>
   <button data-view="week"><span class="ic">📅</span>週</button>
-  <button data-view="trend"><span class="ic">📈</span>趨勢</button>
+  <button data-view="exercises"><span class="ic">📈</span>動作</button>
   <button data-view="settings"><span class="ic">⚙️</span>設定</button>
 </nav>
 
@@ -293,6 +178,10 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
     <button class="x" id="sheetClose">關閉</button>
   </div>
   <div class="last-hint" id="lastHint"></div>
+  <div class="newcat" id="newCatPicker" hidden>
+    <div class="lbl">這個動作練哪個部位？</div>
+    <div class="row" id="newCatRow"></div>
+  </div>
   <div id="setRows"></div>
   <button class="btn" id="addSet" style="margin-top:4px">＋ 再一組</button>
   <div class="e1rm" id="e1rmHint"></div>
@@ -303,596 +192,8 @@ svg.chart{width:100%;height:auto;display:block;margin-top:4px}
   </div>
 </div>
 
-<script>
-'use strict';
+</div><!-- /#app -->
 
-const KEY = 'trainlog.v1';
-const WD = ['日','一','二','三','四','五','六'];
-
-/* ---------- 狀態 ---------- */
-let S = { v:1, pinned:[], days:{}, lastExport:null };
-let cur = iso(new Date());     // 目前檢視的日期
-let weekAnchor = iso(new Date()); // 週檢視的錨點
-let view = 'log';
-let editing = null;            // { name, sets:[{w,r}], note }
-
-function iso(d){
-  const t = new Date(d);
-  return t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
-}
-function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
-function shiftDay(s, n){ const d = parseISO(s); d.setDate(d.getDate()+n); return iso(d); }
-
-function load(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(raw){
-      const p = JSON.parse(raw);
-      if(p && typeof p === 'object'){ S = Object.assign(S, p); }
-    }
-  }catch(e){ console.warn('讀取失敗', e); }
-  if(!S.days) S.days = {};
-  if(!Array.isArray(S.pinned)) S.pinned = [];
-}
-function save(){
-  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch(e){ alert('儲存失敗，可能是瀏覽器空間不足：' + e.message); }
-}
-function day(k){
-  if(!S.days[k]) S.days[k] = { entries:[], food:'', bw:null };
-  return S.days[k];
-}
-function dayOrNull(k){ return S.days[k] || null; }
-
-/* 清掉沒有任何內容的日期，避免累積空殼 */
-function pruneDay(k){
-  const d = S.days[k];
-  if(!d) return;
-  const empty = (!d.entries || !d.entries.length) && !(d.food||'').trim() && (d.bw==null || d.bw==='');
-  if(empty) delete S.days[k];
-}
-
-/* ---------- 計算 ---------- */
-const vol   = sets => sets.reduce((a,s)=> a + (s.w||0)*(s.r||0), 0);
-const e1rm  = s => (s.w||0) * (1 + (s.r||0)/30);            // Epley
-const bestE = sets => sets.reduce((a,s)=> Math.max(a, e1rm(s)), 0);
-const fmt   = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const setsText = sets => {
-  if(!sets.length) return '';
-  // 同重量的連續組合併顯示：60×8,8,7
-  const parts = []; let curW = null, reps = [];
-  for(const s of sets){
-    if(s.w === curW){ reps.push(s.r); }
-    else{
-      if(curW !== null) parts.push(fmt(curW)+'×'+reps.join(','));
-      curW = s.w; reps = [s.r];
-    }
-  }
-  if(curW !== null) parts.push(fmt(curW)+'×'+reps.join(','));
-  return parts.join('  ');
-};
-
-/* 依動作彙整所有歷史：name -> { sessions:[{date,sets,note}] 由舊到新 } */
-function index(){
-  const m = new Map();
-  for(const k of Object.keys(S.days).sort()){
-    for(const e of (S.days[k].entries||[])){
-      if(!m.has(e.ex)) m.set(e.ex, { sessions:[] });
-      m.get(e.ex).sessions.push({ date:k, sets:e.sets||[], note:e.note||'' });
-    }
-  }
-  return m;
-}
-/* 這個動作在 before 之前最後一次的紀錄 */
-function lastBefore(idx, name, before){
-  const rec = idx.get(name);
-  if(!rec) return null;
-  for(let i = rec.sessions.length-1; i >= 0; i--){
-    if(rec.sessions[i].date < before) return rec.sessions[i];
-  }
-  return null;
-}
-function mondayOf(s){
-  const d = parseISO(s);
-  const off = (d.getDay() + 6) % 7;   // 週一為 0
-  d.setDate(d.getDate() - off);
-  return iso(d);
-}
-
-/* ---------- 畫面：記錄 ---------- */
-function renderDate(){
-  const d = parseISO(cur), today = iso(new Date());
-  const rel = cur === today ? '今天' : (cur === shiftDay(today,-1) ? '昨天' : '');
-  document.getElementById('dateLabel').innerHTML =
-    (d.getMonth()+1) + '/' + d.getDate() + ' (' + WD[d.getDay()] + ')' +
-    (rel ? '<small>' + rel + '</small>' : '<small>' + d.getFullYear() + '</small>');
-  document.getElementById('todayBtn').hidden = (cur === today);
-}
-
-function renderLog(){
-  renderDate();
-  const idx = index();
-  const d = dayOrNull(cur);
-  const entries = d ? d.entries : [];
-
-  // 今日紀錄
-  const list = document.getElementById('todayList');
-  if(!entries.length){
-    list.innerHTML = '<div class="empty">還沒有紀錄。從上面搜尋或點下面的動作開始。</div>';
-  }else{
-    list.innerHTML = '';
-    entries.forEach(e => {
-      const b = document.createElement('button');
-      b.className = 'entry';
-      b.innerHTML =
-        '<span><span class="n">' + esc(e.ex) + '</span>' +
-        '<div class="sets">' + esc(setsText(e.sets)) + '</div>' +
-        (e.note ? '<div class="note">' + esc(e.note) + '</div>' : '') + '</span>' +
-        '<span class="vol">' + Math.round(vol(e.sets)) + ' kg<br>' +
-        '<span style="opacity:.75">1RM ' + Math.round(bestE(e.sets)) + '</span></span>';
-      b.onclick = () => openSheet(e.ex);
-      list.appendChild(b);
-    });
-  }
-
-  // 最近做過
-  const done = new Set(entries.map(e => e.ex));
-  const recent = [...idx.entries()]
-    .map(([name, rec]) => ({ name, last: rec.sessions[rec.sessions.length-1] }))
-    .sort((a,b) => b.last.date.localeCompare(a.last.date))
-    .slice(0, 12);
-  const grid = document.getElementById('recentGrid');
-  if(!recent.length){
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">還沒有任何動作。在上面搜尋框輸入名稱就能新增。</div>';
-  }else{
-    grid.innerHTML = '';
-    recent.forEach(r => {
-      const isDone = done.has(r.name);
-      const todayEntry = isDone ? entries.find(e => e.ex === r.name) : null;
-      const prev = lastBefore(idx, r.name, cur);
-      const b = document.createElement('button');
-      b.className = 'chip' + (isDone ? ' done' : '');
-      // 已記錄的顯示今天的數字，沒記的顯示上次的當作參考
-      const sub = todayEntry ? setsText(todayEntry.sets)
-                : prev ? '上次 ' + setsText(prev.sets) : '—';
-      b.innerHTML = '<div class="n">' + esc(r.name) + '</div>' +
-        '<div class="s">' + esc(sub) + '</div>';
-      b.onclick = () => openSheet(r.name);
-      grid.appendChild(b);
-    });
-  }
-
-  // 飲食 / 體重
-  document.getElementById('food').value = d ? (d.food || '') : '';
-  document.getElementById('bw').value = (d && d.bw != null) ? d.bw : '';
-}
-
-function renderSearch(){
-  const q = document.getElementById('search').value.trim();
-  const box = document.getElementById('results');
-  if(!q){ box.className = ''; box.innerHTML = ''; return; }
-  const idx = index();
-  const names = [...idx.keys()].filter(n => n.toLowerCase().includes(q.toLowerCase()));
-  box.className = 'on';
-  box.innerHTML = '';
-  names.slice(0, 8).forEach(n => {
-    const prev = lastBefore(idx, n, cur);
-    const b = document.createElement('button');
-    b.className = 'result';
-    b.innerHTML = '<span class="n">' + esc(n) + '</span><span class="s">' +
-      (prev ? esc(setsText(prev.sets)) : '—') + '</span>';
-    b.onclick = () => { clearSearch(); openSheet(n); };
-    box.appendChild(b);
-  });
-  if(!names.some(n => n === q)){
-    const b = document.createElement('button');
-    b.className = 'result new';
-    b.innerHTML = '<span class="n">＋ 新增「' + esc(q) + '」</span>';
-    b.onclick = () => { clearSearch(); openSheet(q); };
-    box.appendChild(b);
-  }
-}
-function clearSearch(){
-  const s = document.getElementById('search');
-  s.value = ''; s.blur();
-  document.getElementById('results').className = '';
-  document.getElementById('results').innerHTML = '';
-}
-
-/* ---------- 輸入面板 ---------- */
-function openSheet(name){
-  const idx = index();
-  const d = dayOrNull(cur);
-  const existing = d ? d.entries.find(e => e.ex === name) : null;
-  const prev = lastBefore(idx, name, cur);
-
-  let sets, note = '', hint;
-  if(existing){
-    sets = existing.sets.map(s => ({ w:s.w, r:s.r }));
-    note = existing.note || '';
-    hint = prev ? ('上次 ' + setsText(prev.sets) + ' · ' + shortDate(prev.date)) : '今天已記錄';
-  }else if(prev){
-    sets = prev.sets.map(s => ({ w:s.w, r:s.r }));   // 帶入上次數字
-    hint = '已帶入 <b>' + shortDate(prev.date) + '</b> 的 ' + setsText(prev.sets) + '，改動後儲存';
-  }else{
-    sets = [{ w:'', r:'' }];
-    hint = '第一次記這個動作';
-  }
-
-  editing = { name, sets, note };
-  document.getElementById('sheetName').textContent = name;
-  document.getElementById('lastHint').innerHTML = hint;
-  document.getElementById('noteInput').value = note;
-  document.getElementById('deleteEntry').style.display = existing ? '' : 'none';
-  renderSetRows();
-  document.getElementById('scrim').classList.add('on');
-  document.getElementById('sheet').classList.add('on');
-}
-function closeSheet(){
-  document.getElementById('scrim').classList.remove('on');
-  document.getElementById('sheet').classList.remove('on');
-  editing = null;
-}
-function shortDate(k){ const d = parseISO(k); return (d.getMonth()+1) + '/' + d.getDate(); }
-
-function renderSetRows(){
-  const box = document.getElementById('setRows');
-  box.innerHTML = '';
-  editing.sets.forEach((s, i) => {
-    const row = document.createElement('div');
-    row.className = 'setrow';
-    row.innerHTML =
-      '<span class="idx">' + (i+1) + '</span>' +
-      '<input type="number" inputmode="decimal" step="0.5" placeholder="重量" value="' + (s.w === '' ? '' : s.w) + '">' +
-      '<span class="u">kg ×</span>' +
-      '<input type="number" inputmode="numeric" step="1" placeholder="次數" value="' + (s.r === '' ? '' : s.r) + '">' +
-      '<button class="del" aria-label="刪除這組">✕</button>';
-    const [wi, ri] = row.querySelectorAll('input');
-    wi.oninput = () => { s.w = wi.value === '' ? '' : parseFloat(wi.value); updateE1rm(); };
-    ri.oninput = () => { s.r = ri.value === '' ? '' : parseInt(ri.value, 10); updateE1rm(); };
-    row.querySelector('.del').onclick = () => {
-      editing.sets.splice(i, 1);
-      if(!editing.sets.length) editing.sets.push({ w:'', r:'' });
-      renderSetRows();
-    };
-    box.appendChild(row);
-  });
-  updateE1rm();
-}
-function updateE1rm(){
-  const valid = cleanSets(editing.sets);
-  const el = document.getElementById('e1rmHint');
-  if(!valid.length){ el.textContent = ''; return; }
-  el.textContent = '總量 ' + Math.round(vol(valid)) + ' kg · 估算 1RM ' + Math.round(bestE(valid)) + ' kg';
-}
-function cleanSets(sets){
-  return sets
-    .map(s => ({ w: parseFloat(s.w), r: parseInt(s.r, 10) }))
-    .filter(s => !isNaN(s.w) && !isNaN(s.r) && s.r > 0);
-}
-
-document.getElementById('addSet').onclick = () => {
-  const last = editing.sets[editing.sets.length-1];
-  editing.sets.push(last ? { w:last.w, r:last.r } : { w:'', r:'' });
-  renderSetRows();
-  const inputs = document.querySelectorAll('#setRows .setrow input');
-  if(inputs.length) inputs[inputs.length-1].focus();
-};
-document.getElementById('saveEntry').onclick = () => {
-  const sets = cleanSets(editing.sets);
-  const note = document.getElementById('noteInput').value.trim();
-  const d = day(cur);
-  const i = d.entries.findIndex(e => e.ex === editing.name);
-  if(!sets.length){
-    if(i >= 0) d.entries.splice(i, 1);
-  }else if(i >= 0){
-    d.entries[i] = { ex: editing.name, sets, note };
-  }else{
-    d.entries.push({ ex: editing.name, sets, note });
-  }
-  pruneDay(cur);
-  save(); closeSheet(); renderLog();
-};
-document.getElementById('deleteEntry').onclick = () => {
-  const d = dayOrNull(cur);
-  if(d){
-    const i = d.entries.findIndex(e => e.ex === editing.name);
-    if(i >= 0) d.entries.splice(i, 1);
-    pruneDay(cur);
-    save();
-  }
-  closeSheet(); renderLog();
-};
-document.getElementById('sheetClose').onclick = closeSheet;
-document.getElementById('scrim').onclick = closeSheet;
-
-/* ---------- 週檢視 ---------- */
-function renderWeek(){
-  const mon = mondayOf(weekAnchor);
-  const days = Array.from({length:7}, (_,i) => shiftDay(mon, i));
-  const today = iso(new Date());
-
-  const m0 = parseISO(days[0]), m6 = parseISO(days[6]);
-  document.getElementById('weekLabel').innerHTML =
-    (m0.getMonth()+1) + '/' + m0.getDate() + ' – ' + (m6.getMonth()+1) + '/' + m6.getDate() +
-    '<small>' + (mon === mondayOf(today) ? '本週' : m0.getFullYear()) + '</small>';
-
-  const grid = document.getElementById('weekGrid');
-  grid.innerHTML = '';
-  days.forEach(k => {
-    const d = dayOrNull(k);
-    const v = d ? d.entries.reduce((a,e) => a + vol(e.sets), 0) : 0;
-    const dt = parseISO(k);
-    const b = document.createElement('button');
-    b.className = 'daycell' + (v > 0 ? ' has' : '') + (k === today ? ' today' : '');
-    b.innerHTML = '<div class="wd">' + WD[dt.getDay()] + '</div><div class="dd">' + dt.getDate() + '</div>' +
-      '<div class="vv">' + (v > 0 ? Math.round(v/100)/10 + 't' : (d && d.food ? '🍚' : '')) + '</div>';
-    b.onclick = () => { cur = k; switchView('log'); };
-    grid.appendChild(b);
-  });
-
-  const sum = ks => {
-    let d0 = 0, v0 = 0;
-    ks.forEach(k => {
-      const d = dayOrNull(k);
-      if(d && d.entries.length){ d0++; v0 += d.entries.reduce((a,e) => a + vol(e.sets), 0); }
-    });
-    return { days:d0, vol:v0 };
-  };
-  const thisW = sum(days);
-  const prevW = sum(Array.from({length:7}, (_,i) => shiftDay(shiftDay(mon,-7), i)));
-  const dv = prevW.vol ? Math.round((thisW.vol - prevW.vol) / prevW.vol * 100) : null;
-
-  document.getElementById('weekStats').innerHTML =
-    stat(thisW.days, '訓練天數') +
-    stat(Math.round(thisW.vol/100)/10 + 't', '總訓練量') +
-    stat(dv === null ? '—' : '<span class="delta ' + (dv >= 0 ? 'up' : 'down') + '">' +
-         (dv >= 0 ? '+' : '') + dv + '%</span>', '對比上週');
-
-  // 本週動作彙總
-  const agg = new Map();
-  days.forEach(k => {
-    const d = dayOrNull(k);
-    if(!d) return;
-    d.entries.forEach(e => {
-      if(!agg.has(e.ex)) agg.set(e.ex, { sets:0, vol:0 });
-      const a = agg.get(e.ex);
-      a.sets += e.sets.length;
-      a.vol += vol(e.sets);
-    });
-  });
-  const wx = document.getElementById('weekExercises');
-  if(!agg.size){
-    wx.innerHTML = '<div class="empty">這週還沒有訓練紀錄。</div>';
-  }else{
-    wx.innerHTML = [...agg.entries()]
-      .sort((a,b) => b[1].vol - a[1].vol)
-      .map(([n,a]) => '<div class="pin-row"><div><div>' + esc(n) + '</div>' +
-        '<div class="meta">' + a.sets + ' 組</div></div>' +
-        '<div class="meta">' + Math.round(a.vol) + ' kg</div></div>').join('');
-  }
-}
-function stat(v, k){ return '<div class="stat"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>'; }
-
-/* ---------- 趨勢 ---------- */
-function chart(points, color){
-  if(points.length < 2) return '';
-  const W = 320, H = 110, PL = 6, PR = 6, PT = 10, PB = 14;
-  const xs = points.map(p => p.x), ys = points.map(p => p.y);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const pad = (maxY - minY) * 0.18 || Math.max(1, maxY * 0.05);
-  const y0 = minY - pad, y1 = maxY + pad;
-  const px = x => maxX === minX ? W/2 : PL + (x - minX) / (maxX - minX) * (W - PL - PR);
-  const py = y => H - PB - (y - y0) / (y1 - y0) * (H - PT - PB);
-  const line = points.map((p,i) => (i ? 'L' : 'M') + px(p.x).toFixed(1) + ' ' + py(p.y).toFixed(1)).join(' ');
-  const area = line + ' L' + px(maxX).toFixed(1) + ' ' + (H - PB) + ' L' + px(minX).toFixed(1) + ' ' + (H - PB) + ' Z';
-  const dots = points.map(p => '<circle cx="' + px(p.x).toFixed(1) + '" cy="' + py(p.y).toFixed(1) +
-    '" r="2.6" fill="' + color + '"/>').join('');
-  const uid = 'g' + Math.random().toString(36).slice(2,8);
-  return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img">' +
-    '<defs><linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
-    '<stop offset="0%" stop-color="' + color + '" stop-opacity=".22"/>' +
-    '<stop offset="100%" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs>' +
-    '<path d="' + area + '" fill="url(#' + uid + ')"/>' +
-    '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" ' +
-    'stroke-linejoin="round" stroke-linecap="round"/>' + dots +
-    '<text x="' + PL + '" y="' + (H-3) + '" font-size="9" fill="currentColor" opacity=".5">' +
-    shortDate(points[0].k) + '</text>' +
-    '<text x="' + (W-PR) + '" y="' + (H-3) + '" font-size="9" fill="currentColor" opacity=".5" text-anchor="end">' +
-    shortDate(points[points.length-1].k) + '</text></svg>';
-}
-
-function renderTrend(){
-  const idx = index();
-  const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#2f6fed';
-  const good = getComputedStyle(document.body).getPropertyValue('--good').trim() || '#1f9d55';
-  const box = document.getElementById('trendCharts');
-  box.innerHTML = '';
-
-  if(!S.pinned.length){
-    box.innerHTML = '<div class="card"><div class="empty">還沒有釘選任何核心動作。在下面挑 3～5 個常做的動作釘起來，這裡就會出現進步曲線。</div></div>';
-  }
-  S.pinned.forEach(name => {
-    const rec = idx.get(name);
-    const card = document.createElement('div');
-    card.className = 'card';
-    if(!rec || rec.sessions.length < 2){
-      card.innerHTML = '<div class="trend-head"><span class="n">' + esc(name) + '</span></div>' +
-        '<div class="empty">至少要有 2 次紀錄才畫得出曲線' +
-        (rec ? '（目前 ' + rec.sessions.length + ' 次）' : '') + '。</div>';
-      box.appendChild(card);
-      return;
-    }
-    const pts = rec.sessions.map(s => ({ x: parseISO(s.date).getTime(), y: bestE(s.sets), k: s.date }));
-    const first = pts[0].y, last = pts[pts.length-1].y;
-    const dv = Math.round((last - first) / first * 100);
-    card.innerHTML =
-      '<div class="trend-head"><span class="n">' + esc(name) + '</span>' +
-      '<span class="v">估算 1RM <b>' + Math.round(last) + '</b> kg ' +
-      '<span class="delta ' + (dv >= 0 ? 'up' : 'down') + '">' + (dv >= 0 ? '+' : '') + dv + '%</span></span></div>' +
-      chart(pts, accent) +
-      '<div class="meta" style="font-size:12px;color:var(--muted)">' + rec.sessions.length + ' 次紀錄 · 起點 ' +
-      Math.round(first) + ' kg</div>';
-    box.appendChild(card);
-  });
-
-  // 體重
-  const bwPts = Object.keys(S.days).sort()
-    .filter(k => S.days[k].bw != null && S.days[k].bw !== '')
-    .map(k => ({ x: parseISO(k).getTime(), y: parseFloat(S.days[k].bw), k }));
-  const bwBox = document.getElementById('bwChart');
-  if(bwPts.length < 2){
-    bwBox.innerHTML = '<div class="empty">記錄至少 2 天體重就會出現曲線。增肌期這條線該是穩定往上的。</div>';
-  }else{
-    const f = bwPts[0].y, l = bwPts[bwPts.length-1].y, d = l - f;
-    bwBox.innerHTML = '<div class="trend-head"><span class="n">' + fmt(l) + ' kg</span>' +
-      '<span class="v"><span class="delta ' + (d >= 0 ? 'up' : 'down') + '">' +
-      (d >= 0 ? '+' : '') + fmt(Math.round(d*10)/10) + ' kg</span> 自 ' + shortDate(bwPts[0].k) + '</span></div>' +
-      chart(bwPts, good);
-  }
-
-  // 釘選清單
-  const all = [...idx.entries()]
-    .map(([name, rec]) => ({ name, n: rec.sessions.length, last: rec.sessions[rec.sessions.length-1].date }))
-    .sort((a,b) => b.n - a.n);
-  const pl = document.getElementById('pinList');
-  if(!all.length){
-    pl.innerHTML = '<div class="empty">還沒有任何動作紀錄。</div>';
-  }else{
-    pl.innerHTML = '';
-    all.forEach(a => {
-      const on = S.pinned.includes(a.name);
-      const row = document.createElement('div');
-      row.className = 'pin-row';
-      row.innerHTML = '<div><div>' + esc(a.name) + '</div><div class="meta">' + a.n +
-        ' 次 · 最後 ' + shortDate(a.last) + '</div></div>';
-      const t = document.createElement('button');
-      t.className = 'toggle' + (on ? ' on' : '');
-      t.textContent = on ? '已釘選' : '釘選';
-      t.onclick = () => {
-        if(on) S.pinned = S.pinned.filter(x => x !== a.name);
-        else S.pinned.push(a.name);
-        save(); renderTrend();
-      };
-      row.appendChild(t);
-      pl.appendChild(row);
-    });
-  }
-}
-
-/* ---------- 設定 ---------- */
-function renderSettings(){
-  const days = Object.keys(S.days).length;
-  const sessions = Object.values(S.days).filter(d => d.entries.length).length;
-  const sets = Object.values(S.days).reduce((a,d) => a + d.entries.reduce((b,e) => b + e.sets.length, 0), 0);
-  document.getElementById('dataStats').innerHTML =
-    days + ' 天有資料 · ' + sessions + ' 次訓練 · ' + sets + ' 組<br>' +
-    '約 ' + Math.round((localStorage.getItem(KEY) || '').length / 1024 * 10) / 10 + ' KB';
-  const note = document.getElementById('backupNote');
-  if(S.lastExport){
-    const days2 = Math.floor((Date.now() - S.lastExport) / 86400000);
-    note.innerHTML = '上次匯出：' + new Date(S.lastExport).toLocaleDateString('zh-TW') +
-      (days2 >= 14 ? ' <b style="color:var(--danger)">（已經 ' + days2 + ' 天了，該備份了）</b>' : '');
-  }else{
-    note.innerHTML = '<b style="color:var(--danger)">還沒有匯出過。</b>資料只存在這台裝置的瀏覽器裡，清除瀏覽資料就會消失。';
-  }
-}
-document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(S, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = '訓練紀錄-' + iso(new Date()) + '.json';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  S.lastExport = Date.now(); save(); renderSettings();
-};
-document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
-document.getElementById('importFile').onchange = ev => {
-  const f = ev.target.files[0];
-  if(!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try{
-      const p = JSON.parse(r.result);
-      if(!p || typeof p !== 'object' || !p.days) throw new Error('格式不符');
-      const n = Object.keys(p.days).length;
-      if(confirm('匯入 ' + n + ' 天的資料？這會覆蓋目前裝置上的全部紀錄。')){
-        S = Object.assign({ v:1, pinned:[], days:{}, lastExport:null }, p);
-        save(); renderAll();
-        alert('匯入完成。');
-      }
-    }catch(e){ alert('匯入失敗：' + e.message); }
-    ev.target.value = '';
-  };
-  r.readAsText(f);
-};
-document.getElementById('wipeBtn').onclick = () => {
-  if(!confirm('確定要清除所有訓練紀錄嗎？這個動作無法復原。')) return;
-  if(!confirm('真的確定？建議先匯出一份備份。')) return;
-  S = { v:1, pinned:[], days:{}, lastExport:null };
-  save(); renderAll();
-};
-
-/* ---------- 導覽 ---------- */
-function switchView(v){
-  view = v;
-  ['log','week','trend','settings'].forEach(x => {
-    document.getElementById('view-' + x).hidden = (x !== v);
-  });
-  document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-  document.getElementById('topbar').hidden = (v !== 'log');
-  if(v === 'log') renderLog();
-  if(v === 'week'){ weekAnchor = cur; renderWeek(); }
-  if(v === 'trend') renderTrend();
-  if(v === 'settings') renderSettings();
-  window.scrollTo(0, 0);
-}
-document.querySelectorAll('#tabbar button').forEach(b => {
-  b.onclick = () => switchView(b.dataset.view);
-});
-document.getElementById('prevDay').onclick = () => { cur = shiftDay(cur, -1); clearSearch(); renderLog(); };
-document.getElementById('nextDay').onclick = () => { cur = shiftDay(cur, 1); clearSearch(); renderLog(); };
-document.getElementById('todayBtn').onclick = () => { cur = iso(new Date()); clearSearch(); renderLog(); };
-document.getElementById('prevWeek').onclick = () => { weekAnchor = shiftDay(mondayOf(weekAnchor), -7); renderWeek(); };
-document.getElementById('nextWeek').onclick = () => { weekAnchor = shiftDay(mondayOf(weekAnchor), 7); renderWeek(); };
-
-document.getElementById('search').oninput = renderSearch;
-document.getElementById('search').onkeydown = e => {
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    const first = document.querySelector('#results .result');
-    if(first) first.click();
-  }
-};
-
-// 飲食：停止輸入 500ms 後自動存
-let foodTimer = null;
-document.getElementById('food').oninput = e => {
-  clearTimeout(foodTimer);
-  const val = e.target.value;
-  foodTimer = setTimeout(() => { day(cur).food = val; pruneDay(cur); save(); }, 500);
-};
-document.getElementById('bw').onchange = e => {
-  const v = e.target.value.trim();
-  day(cur).bw = v === '' ? null : parseFloat(v);
-  pruneDay(cur); save();
-};
-
-function esc(s){
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function renderAll(){ switchView(view); }
-
-load();
-switchView('log');
-
-// 離線支援（只在 https 或 localhost 有效）
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW 註冊失敗', e));
-  });
-}
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>

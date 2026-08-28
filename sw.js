@@ -1,6 +1,9 @@
 // 離線快取：健身房訊號差也要能記錄
-const CACHE = 'trainlog-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
+const CACHE = 'trainlog-v2';
+const ASSETS = [
+  './', './index.html', './styles.css', './app.js', './supabaseClient.js',
+  './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
